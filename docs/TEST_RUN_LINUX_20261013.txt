@@ -1,0 +1,32 @@
+ORBIT A1 RUNTIME CONTRACT
+platforms: linux, linux2, darwin
+  Linux, WSL2 or a Linux container is the supported deployment. macOS is permitted for development because it provides the same flock semantics; it is not a supported deployment target.
+filesystems:
+  - local filesystems only (ext4, xfs, btrfs, apfs, overlayfs)
+  - NFS is NOT supported: flock over NFS depends on the server, the mount options and the client implementation, and a lock that is silently advisory-only would defeat the uniqueness guarantee the journal depends on
+  - SMB/CIFS and network shares are NOT supported, for the same reason
+why: the journal's append lock is fcntl.flock, which is POSIX-only and is only dependable on a local filesystem. Uniqueness of a durable INTENT and of a FILL is decided inside that lock, so its semantics are a safety property, not a portability detail.
+not supported: native Windows (win32/cygwin): fcntl does not exist there, and no cross-platform equivalent is claimed because none could be tested
+
+tests/test_audit_completeness.py              RESULTS: 27 passed, 0 failed
+tests/test_gateway_adversarial.py             RESULTS: 68 passed, 0 failed
+tests/test_journal_crash.py                   RESULTS: 45 passed, 0 failed
+tests/test_reconciler_adversarial.py          RESULTS: 80 passed, 0 failed
+tests/test_safety_closure.py                  RESULTS: 139 passed, 0 failed
+tests/test_safety_closure_r2.py               RESULTS: 66 passed, 0 failed
+tests/test_safety_closure_r3.py               RESULTS: 57 passed, 0 failed
+tests/test_safety_closure_r4a.py              RESULTS: 54 passed, 0 failed
+tests/test_safety_closure_r4b.py              RESULTS: 33 passed, 0 failed
+tests/test_safety_closure_r4b2.py             RESULTS: 30 passed, 0 failed
+tests/test_safety_closure_r4c.py              RESULTS: 31 passed, 0 failed
+tests/test_safety_closure_r4c2.py             RESULTS: 55 passed, 0 failed
+tests/test_safety_closure_r4c3.py             RESULTS: 53 passed, 0 failed
+tests/test_safety_closure_r4c4.py             RESULTS: 49 passed, 0 failed
+tests/test_safety_closure_r4c4_a1.py          RESULTS: 49 passed, 0 failed
+tests/test_safety_closure_r4c4_a2r.py         RESULTS: 70 passed, 0 failed
+tests/test_safety_closure_r4c4_dayfig.py      RESULTS: 51 passed, 0 failed
+tests/test_safety_closure_r4c4_jseq.py        RESULTS: 79 passed, 0 failed
+tests/test_safety_closure_r4c4_n1.py          RESULTS: 59 passed, 0 failed
+tests/test_safety_closure_r4c4_r45.py         RESULTS: 61 passed, 0 failed
+tests/test_tools_adversarial.py               RESULTS: 66 passed, 0 failed
+tests/test_writer_authority.py                RESULTS: 20 passed, 0 failed
